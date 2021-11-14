@@ -12,6 +12,10 @@ import {
 import { ImageMiddleware } from "./middleware";
 
 
+interface FromOpts {
+  as?: string;
+}
+
 interface CopyOpts {
   from: Image;
 }
@@ -210,9 +214,10 @@ export class Image {
     });
   }
 
-  private static from(workspace: Workspace, image: string): Image {
+  private static from(workspace: Workspace, image: string, opts: FromOpts = {}): Image {
     const req = new FromRequest();
     req.setImage(image);
+    req.setAs(opts.as || "");
 
     // Call the server and prepare to containerise
     const id = new Promise<string>((res, rej) => {
