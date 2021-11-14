@@ -12,7 +12,7 @@ import {
 import { ImageMiddleware } from "./middleware";
 
 
-interface FromOpts {
+export interface FromOpts {
   as?: string;
 }
 

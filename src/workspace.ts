@@ -1,5 +1,5 @@
 import { BoxygenProgram } from "./program";
-import { Image } from "./image";
+import { Image, FromOpts } from "./image";
 import { Logger, DEFAULT_LOGGER } from "./logger";
 import { BuilderClient } from "@nitric/boxygen-api/builder/v1/builder_grpc_pb";
 import * as grpc from "@grpc/grpc-js";
@@ -37,7 +37,7 @@ export class Workspace {
   }
 
   // Create a new image from this workspace
-  public image(from: string): Image {
+  public image(from: string, opts: FromOpts = {}): Image {
     return Image["from"](this, from);
   }
 
