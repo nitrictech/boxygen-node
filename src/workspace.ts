@@ -5,7 +5,6 @@ import { BuilderClient } from "@nitric/boxygen-api/builder/v1/builder_grpc_pb";
 import * as grpc from "@grpc/grpc-js";
 import execa from "execa";
 import getPort from "get-port";
-import waitPort from "wait-port";
 import { oneLine } from "common-tags";
 import * as path from "path";
 
