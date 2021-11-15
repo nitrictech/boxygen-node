@@ -12,6 +12,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.4.4",
     "@nitric/boxygen-api": "^0.0.1-rc.3",
     "common-tags": "^1.8.0",
     "execa": "^5.1.1",
@@ -38,11 +39,11 @@
     "typescript": "^3.3"
   },
   "husky": {
-		"hooks": {
-			"pre-commit": "lint-staged"
-		}
-	},
-	"lint-staged": {
-		"./**/*.{ts,js,css,md}": "prettier --write"
-	}
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "./**/*.{ts,js,css,md}": "prettier --write"
+  }
 }
