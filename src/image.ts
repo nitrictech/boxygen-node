@@ -11,7 +11,6 @@ import {
 } from "@nitric/boxygen-api/builder/v1/builder_pb";
 import { ImageMiddleware } from "./middleware";
 
-
 export interface FromOpts {
   as?: string;
   ignore?: string[];
@@ -22,12 +21,12 @@ interface CopyOpts {
 }
 
 interface ConfigOpts {
-	ports?: number[];
-	env?: Record<string, string>;
-	volumes?: string[];
-	workDir?: string;
-	entrypoint?: string[];
-	cmd?: string[];
+  ports?: number[];
+  env?: Record<string, string>;
+  volumes?: string[];
+  workDir?: string;
+  entrypoint?: string[];
+  cmd?: string[];
 }
 
 /**
@@ -39,7 +38,7 @@ export class Image {
 
   // Ensure all instructions are applied in order
   // private instructions: Promise<void>[];
-	private instructions: ((image: Image) => Promise<void>)[];
+  private instructions: ((image: Image) => Promise<void>)[];
 
   private constructor(workspace: Workspace, id: Promise<string>) {
     this.id = id;
@@ -62,8 +61,8 @@ export class Image {
    *
    */
   public add(src: string, dest: string): Image {
-		this.instructions.push(async (i) => {
-			const addRequest = new AddRequest();
+    this.instructions.push(async (i) => {
+      const addRequest = new AddRequest();
       const container = await i.container;
 
       addRequest.setSrc(src);
@@ -77,15 +76,15 @@ export class Image {
         i.workspace.logger(data.getLogList());
       });
 
-      return new Promise<void>(res => resp.once("end", res));
-		});
+      return new Promise<void>((res) => resp.once("end", res));
+    });
 
     return this;
   }
 
   public copy(src: string, dest: string, opts?: CopyOpts): Image {
-		this.instructions.push(async (i) => {
-			const copyRequest = new CopyRequest();
+    this.instructions.push(async (i) => {
+      const copyRequest = new CopyRequest();
       const container = await i.container;
 
       if (opts && opts.from) {
@@ -104,15 +103,15 @@ export class Image {
         i.workspace.logger(data.getLogList());
       });
 
-			return new Promise<void>(res => resp.once("end", res));
-		});
+      return new Promise<void>((res) => resp.once("end", res));
+    });
 
     return this;
   }
 
   public run(cmd: string[]): Image {
-		this.instructions.push(async (i) => {
-			const runRequest = new RunRequest();
+    this.instructions.push(async (i) => {
+      const runRequest = new RunRequest();
       const container = await i.container;
 
       runRequest.setContainer(container);
@@ -124,44 +123,44 @@ export class Image {
         i.workspace.logger(data.getLogList());
       });
 
-			return new Promise<void>(res => resp.once("end", res));
-		});
+      return new Promise<void>((res) => resp.once("end", res));
+    });
 
     return this;
   }
 
   public config(opts: ConfigOpts): Image {
-		this.instructions.push(async (i) => {
-			const configRequest = new ConfigRequest();
+    this.instructions.push(async (i) => {
+      const configRequest = new ConfigRequest();
       const container = await i.container;
 
       configRequest.setContainer(container);
-			if (opts.ports) {
-				configRequest.setPortsList(opts.ports);
-			}
+      if (opts.ports) {
+        configRequest.setPortsList(opts.ports);
+      }
 
-			if (opts.cmd) {
-				configRequest.setCmdList(opts.cmd);
-			}
+      if (opts.cmd) {
+        configRequest.setCmdList(opts.cmd);
+      }
 
-			if (opts.entrypoint) {
-				configRequest.setEntrypointList(opts.entrypoint);
-			}
+      if (opts.entrypoint) {
+        configRequest.setEntrypointList(opts.entrypoint);
+      }
 
-			if (opts.volumes) {
-				configRequest.setVolumesList(opts.volumes);
-			}
+      if (opts.volumes) {
+        configRequest.setVolumesList(opts.volumes);
+      }
 
       if (opts.workDir) {
         configRequest.setWorkingDir(opts.workDir);
       }
 
-			if (opts.env) {
-				Object.entries(opts.env).forEach(([k,v]) => {
-					configRequest.getEnvMap().set(k,v);
-				});
-			}
-      
+      if (opts.env) {
+        Object.entries(opts.env).forEach(([k, v]) => {
+          configRequest.getEnvMap().set(k, v);
+        });
+      }
+
       const resp = i.workspace.client.config(configRequest);
 
       // Log output
@@ -169,8 +168,8 @@ export class Image {
         i.workspace.logger(data.getLogList());
       });
 
-			return new Promise<void>(res => resp.once("end", res));
-		});
+      return new Promise<void>((res) => resp.once("end", res));
+    });
 
     return this;
   }
@@ -183,20 +182,20 @@ export class Image {
     return this;
   }
 
-	// apply queued instructions
-	public async stage(): Promise<Image> {
-		for(const i of this.instructions) {
-			await i(this);
-		}
+  // apply queued instructions
+  public async stage(): Promise<Image> {
+    for (const i of this.instructions) {
+      await i(this);
+    }
 
-		// clear out the queue
-		this.instructions = [];
+    // clear out the queue
+    this.instructions = [];
 
     return this;
-	}
+  }
 
   public async commit(tag: string) {
-		await this.stage();
+    await this.stage();
 
     const container = await this.container;
     const commitRequest = new CommitRequest();
@@ -215,7 +214,11 @@ export class Image {
     });
   }
 
-  private static from(workspace: Workspace, image: string, opts: FromOpts = {}): Image {
+  private static from(
+    workspace: Workspace,
+    image: string,
+    opts: FromOpts = {}
+  ): Image {
     const req = new FromRequest();
     req.setImage(image);
     req.setAs(opts.as || "");

@@ -1,3 +1,3 @@
-import { Image } from './image';
+import { Image } from "./image";
 
-export type ImageMiddleware = (image: Image) => Promise<void>; 
+export type ImageMiddleware = (image: Image) => Promise<void>;

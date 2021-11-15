@@ -1,3 +1,3 @@
-import { Workspace } from './workspace';
+import { Workspace } from "./workspace";
 
 export type BoxygenProgram = (workspace: Workspace) => Promise<void>;

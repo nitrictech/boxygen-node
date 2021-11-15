@@ -18,7 +18,7 @@ interface WorkspaceOptions {
   logger: Logger;
 }
 
-const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest"
+const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
 
 /**
  *
