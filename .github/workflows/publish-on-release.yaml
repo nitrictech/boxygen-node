@@ -1,0 +1,50 @@
+name: Publish to NPM on Github Release
+
+on: 
+  release:
+     types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Cache Yarn Cache
+      uses: actions/cache@v2
+      with:
+        path: '.yarn/cache'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Use Node 14
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14
+        registry-url: 'https://registry.npmjs.org'
+        always-auth: true
+
+    - name: Install Dependencies
+      run: yarn --immutable
+
+    # Update version metadata to match tag version
+    - name: Update Versions
+      run: npm version ${{ github.event.release.tag_name }} --no-git-tag-version
+
+    - name: Build
+      run: yarn build
+
+    # Release Production
+    - name: Publish latest to NPM
+      if: "!github.event.release.prerelease"
+      run: npm publish --access public
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    # release RC
+    - name: Publish latest RC to NPM
+      if: "github.event.release.prerelease"
+      run: npm publish --access public --tag rc-latest
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

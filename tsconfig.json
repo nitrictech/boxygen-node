@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "module": "commonjs",
+    "target": "es6",
+    "outDir": "lib",
+    "allowJs": true,
+    "types": ["node", "jest"],
+    "importHelpers": true,
+    "baseUrl": "./",
+    "paths": {
+      "@nitric/boxygen": ["src"]
+    }
+  },
+  "include": ["src/**/*", "examples/**/*"]
+}
