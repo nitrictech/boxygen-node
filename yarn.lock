@@ -572,10 +572,10 @@
     semver "^7.3.5"
     tar "^6.1.11"
 
-"@nitric/boxygen-api@^0.0.1-rc.2":
-  version "0.0.1-rc.2"
-  resolved "https://registry.yarnpkg.com/@nitric/boxygen-api/-/boxygen-api-0.0.1-rc.2.tgz#3a8fbfec6e7a7c791cb89bd5c5a9be653c546076"
-  integrity sha512-YAshqMt6LcCN2Q3VxEJ6LarjH5r/lqaTxYXuruQayWvKZypORmHlhmaY8A8Uj346XsrW279019mm8ZWN9/4PVw==
+"@nitric/boxygen-api@^0.0.1-rc.3":
+  version "0.0.1-rc.3"
+  resolved "https://registry.yarnpkg.com/@nitric/boxygen-api/-/boxygen-api-0.0.1-rc.3.tgz#3c6d24e231f694cc172bc03a24a6a2451faf9fa3"
+  integrity sha512-risg9VDkt4aH828+sD7cMuCUXOfEVbBI9BCIjOzdLf3smsHX1mNiV1dZXLsyIUVVvVWmjZwgcM4wIj7X8wm5rQ==
   dependencies:
     "@grpc/grpc-js" "^1.1.7"
     google-protobuf "3.14.0"

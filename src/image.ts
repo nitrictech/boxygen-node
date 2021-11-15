@@ -14,6 +14,7 @@ import { ImageMiddleware } from "./middleware";
 
 export interface FromOpts {
   as?: string;
+  ignore?: string[];
 }
 
 interface CopyOpts {
@@ -218,6 +219,7 @@ export class Image {
     const req = new FromRequest();
     req.setImage(image);
     req.setAs(opts.as || "");
+    req.setIgnoreList(opts.ignore || []);
 
     // Call the server and prepare to containerise
     const id = new Promise<string>((res, rej) => {
