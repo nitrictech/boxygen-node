@@ -40,11 +40,11 @@ jobs:
       if: "!github.event.release.prerelease"
       run: npm publish --access public
       env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     # release RC
     - name: Publish latest RC to NPM
       if: "github.event.release.prerelease"
       run: npm publish --access public --tag rc-latest
       env:
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
