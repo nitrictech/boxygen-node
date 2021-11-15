@@ -63,14 +63,9 @@ export class Workspace {
 
     const cmd = execa.command(cmdStr);
 
-    const open = await waitPort({
-      port,
-      timeout: 5000,
-    });
-
-    if (!open) {
-      throw new Error("boxygen failed to start");
-    }
+    // Give the server time to startup
+    // FIXME: Should replace this with a retry connection test on the gRPC port
+    await new Promise<void>(res => setTimeout(res, 1000));
 
     const client = new BuilderClient(
       `127.0.0.1:${port}`,
