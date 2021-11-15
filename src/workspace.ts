@@ -5,6 +5,7 @@ import { BuilderClient } from "@nitric/boxygen-api/builder/v1/builder_grpc_pb";
 import * as grpc from "@grpc/grpc-js";
 import execa from "execa";
 import getPort from "get-port";
+import waitPort from "wait-port";
 import { oneLine } from "common-tags";
 import * as path from "path";
 
@@ -21,7 +22,6 @@ interface WorkspaceOptions {
 const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
 
 /**
- *
  *
  */
 export class Workspace {
@@ -63,9 +63,14 @@ export class Workspace {
 
     const cmd = execa.command(cmdStr);
 
-    console.log("Running: ", cmdStr);
+    const open = await waitPort({
+      port,
+      timeout: 5000,
+    });
 
-    await new Promise((res) => setTimeout(res, 1000));
+    if (!open) {
+      throw new Error("boxygen failed to start");
+    }
 
     const client = new BuilderClient(
       `127.0.0.1:${port}`,
