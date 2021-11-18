@@ -7,6 +7,7 @@ import execa from "execa";
 import getPort from "get-port";
 import { oneLine } from "common-tags";
 import * as path from "path";
+import tcpPortUsed from 'tcp-port-used';
 
 const DEFAULT_OPTS = {
   context: ".",
@@ -18,7 +19,7 @@ interface WorkspaceOptions {
   logger: Logger;
 }
 
-const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
+export const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
 
 /**
  *
@@ -26,13 +27,17 @@ const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
 export class Workspace {
   // hold reference to instansiated client here...
   public readonly logger: Logger;
-  public readonly client: BuilderClient;
+  private readonly _client: BuilderClient;
   public readonly context: string;
 
   private constructor(client: BuilderClient, opts: WorkspaceOptions) {
-    this.client = client;
+    this._client = client;
     this.logger = opts.logger;
     this.context = path.resolve(opts.context);
+  }
+
+  public get client() {
+    return this._client;
   }
 
   // Create a new image from this workspace
@@ -64,7 +69,8 @@ export class Workspace {
 
     // Give the server time to startup
     // FIXME: Should replace this with a retry connection test on the gRPC port
-    await new Promise<void>(res => setTimeout(res, 1000));
+    await tcpPortUsed.waitUntilUsed(port, 100, 1000);
+    //await new Promise<void>(res => setTimeout(res, 1000));
 
     const client = new BuilderClient(
       `127.0.0.1:${port}`,
