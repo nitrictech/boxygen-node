@@ -19,6 +19,8 @@ interface WorkspaceOptions {
   logger: Logger;
 }
 
+const PORT_TIMEOUT = 5000;
+
 export const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
 
 /**
@@ -69,8 +71,7 @@ export class Workspace {
 
     // Give the server time to startup
     // FIXME: Should replace this with a retry connection test on the gRPC port
-    await tcpPortUsed.waitUntilUsed(port, 100, 1000);
-    //await new Promise<void>(res => setTimeout(res, 1000));
+    await tcpPortUsed.waitUntilUsed(port, 100, PORT_TIMEOUT);
 
     const client = new BuilderClient(
       `127.0.0.1:${port}`,
