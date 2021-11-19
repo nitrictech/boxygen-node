@@ -9,7 +9,8 @@
   "private": false,
   "scripts": {
     "build": "tsc --project tsconfig.prod.json -outDir ./lib/",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "jest --coverage",
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.4.4",

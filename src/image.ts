@@ -9,7 +9,9 @@ import {
   OutputResponse,
   Container,
 } from "@nitric/boxygen-api/builder/v1/builder_pb";
+import { BuilderClient } from "@nitric/boxygen-api/builder/v1/builder_grpc_pb";
 import { ImageMiddleware } from "./middleware";
+import { Logger } from './logger';
 
 export interface FromOpts {
   as?: string;
@@ -34,7 +36,7 @@ interface ConfigOpts {
  */
 export class Image {
   public readonly workspace: Workspace;
-  public readonly id: Promise<string>;
+  private readonly id: Promise<string>;
 
   // Ensure all instructions are applied in order
   // private instructions: Promise<void>[];
@@ -44,6 +46,18 @@ export class Image {
     this.id = id;
     this.workspace = workspace;
     this.instructions = [];
+  }
+  
+  public get context(): string {
+    return this.workspace.context;
+  }
+
+  public get client(): BuilderClient {
+    return this.workspace.client;
+  }
+
+  public get logger(): Logger {
+    return this.workspace.logger;
   }
 
   private get container(): Promise<Container> {
@@ -69,11 +83,11 @@ export class Image {
       addRequest.setDest(dest);
       addRequest.setContainer(container);
 
-      const resp = i.workspace.client.add(addRequest);
+      const resp = i.client.add(addRequest);
 
       // Log output
       resp.on("data", (data: OutputResponse) => {
-        i.workspace.logger(data.getLogList());
+        i.logger(data.getLogList());
       });
 
       return new Promise<void>((res) => resp.once("end", res));
@@ -96,11 +110,11 @@ export class Image {
       copyRequest.setSource(src);
       copyRequest.setDest(dest);
 
-      const resp = i.workspace.client.copy(copyRequest);
+      const resp = i.client.copy(copyRequest);
 
       // Log output
       resp.on("data", (data: OutputResponse) => {
-        i.workspace.logger(data.getLogList());
+        i.logger(data.getLogList());
       });
 
       return new Promise<void>((res) => resp.once("end", res));
@@ -117,10 +131,10 @@ export class Image {
       runRequest.setContainer(container);
       runRequest.setCommandList(cmd);
 
-      const resp = i.workspace.client.run(runRequest);
+      const resp = i.client.run(runRequest);
       // Log output
       resp.on("data", (data: OutputResponse) => {
-        i.workspace.logger(data.getLogList());
+        i.logger(data.getLogList());
       });
 
       return new Promise<void>((res) => resp.once("end", res));
@@ -161,11 +175,11 @@ export class Image {
         });
       }
 
-      const resp = i.workspace.client.config(configRequest);
+      const resp = i.client.config(configRequest);
 
       // Log output
       resp.on("data", (data: OutputResponse) => {
-        i.workspace.logger(data.getLogList());
+        i.logger(data.getLogList());
       });
 
       return new Promise<void>((res) => resp.once("end", res));
@@ -203,10 +217,10 @@ export class Image {
     commitRequest.setTag(tag);
     commitRequest.setContainer(container);
 
-    const resp = this.workspace.client.commit(commitRequest);
+    const resp = this.client.commit(commitRequest);
 
     resp.on("data", (data: OutputResponse) => {
-      this.workspace.logger(data.getLogList());
+      this.logger(data.getLogList());
     });
 
     return await new Promise<void>((res) => {
