@@ -23,17 +23,19 @@ import { oneLine } from "common-tags";
 import * as path from "path";
 import tcpPortUsed from 'tcp-port-used';
 
+const DEFAULT_TIMEOUT = 5000;
+
 const DEFAULT_OPTS = {
   context: ".",
   logger: DEFAULT_LOGGER,
+  timeout: DEFAULT_TIMEOUT,
 };
 
 interface WorkspaceOptions {
   context: string;
   logger: Logger;
+  timeout: number;
 }
-
-const PORT_TIMEOUT = 5000;
 
 export const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
 
@@ -63,12 +65,18 @@ export class Workspace {
 
   public static async start(
     program: BoxygenProgram,
-    opts: WorkspaceOptions = DEFAULT_OPTS
+    opts: Partial<WorkspaceOptions> = DEFAULT_OPTS
   ): Promise<void> {
     // TODO: Start the boxygen server and callback the user program
     const port = await getPort();
 
-    const ctx = path.resolve(opts.context);
+    // Enforce default opts where partially defined
+    const options = {
+      ...DEFAULT_OPTS,
+      ...opts,
+    };
+
+    const ctx = path.resolve(options.context);
 
     execa.commandSync(`docker pull ${BOXYGEN_IMAGE}`);
 
@@ -85,13 +93,13 @@ export class Workspace {
 
     // Give the server time to startup
     // FIXME: Should replace this with a retry connection test on the gRPC port
-    await tcpPortUsed.waitUntilUsed(port, 100, PORT_TIMEOUT);
+    await tcpPortUsed.waitUntilUsed(port, 100, options.timeout);
 
     const client = new BuilderClient(
       `127.0.0.1:${port}`,
       grpc.ChannelCredentials.createInsecure()
     );
-    const wkspc = new Workspace(client, opts);
+    const wkspc = new Workspace(client, options);
 
     await program(wkspc);
 
