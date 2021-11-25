@@ -1,3 +1,17 @@
+// Copyright 2021, Nitric Technologies Pty Ltd.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import { BoxygenProgram } from "./program";
 import { Image, FromOpts } from "./image";
 import { Logger, DEFAULT_LOGGER } from "./logger";
@@ -9,17 +23,19 @@ import { oneLine } from "common-tags";
 import * as path from "path";
 import tcpPortUsed from 'tcp-port-used';
 
+const DEFAULT_TIMEOUT = 5000;
+
 const DEFAULT_OPTS = {
   context: ".",
   logger: DEFAULT_LOGGER,
+  timeout: DEFAULT_TIMEOUT,
 };
 
 interface WorkspaceOptions {
   context: string;
   logger: Logger;
+  timeout: number;
 }
-
-const PORT_TIMEOUT = 5000;
 
 export const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
 
@@ -49,12 +65,18 @@ export class Workspace {
 
   public static async start(
     program: BoxygenProgram,
-    opts: WorkspaceOptions = DEFAULT_OPTS
+    opts: Partial<WorkspaceOptions> = DEFAULT_OPTS
   ): Promise<void> {
     // TODO: Start the boxygen server and callback the user program
     const port = await getPort();
 
-    const ctx = path.resolve(opts.context);
+    // Enforce default opts where partially defined
+    const options = {
+      ...DEFAULT_OPTS,
+      ...opts,
+    };
+
+    const ctx = path.resolve(options.context);
 
     execa.commandSync(`docker pull ${BOXYGEN_IMAGE}`);
 
@@ -71,13 +93,13 @@ export class Workspace {
 
     // Give the server time to startup
     // FIXME: Should replace this with a retry connection test on the gRPC port
-    await tcpPortUsed.waitUntilUsed(port, 100, PORT_TIMEOUT);
+    await tcpPortUsed.waitUntilUsed(port, 100, options.timeout);
 
     const client = new BuilderClient(
       `127.0.0.1:${port}`,
       grpc.ChannelCredentials.createInsecure()
     );
-    const wkspc = new Workspace(client, opts);
+    const wkspc = new Workspace(client, options);
 
     await program(wkspc);
 
