@@ -29,15 +29,19 @@ const DEFAULT_OPTS = {
   context: ".",
   logger: DEFAULT_LOGGER,
   timeout: DEFAULT_TIMEOUT,
+  version: "latest",
 };
 
 interface WorkspaceOptions {
   context: string;
   logger: Logger;
   timeout: number;
+  version: string;
 }
 
-export const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile:rc-latest";
+export const DEFAULT_VERSION = "latest";
+
+export const BOXYGEN_IMAGE = "nitrictech/boxygen-dockerfile";
 
 /**
  *
@@ -76,9 +80,11 @@ export class Workspace {
       ...opts,
     };
 
+    const image = `${BOXYGEN_IMAGE}:${options.version}`
+
     const ctx = path.resolve(options.context);
 
-    execa.commandSync(`docker pull ${BOXYGEN_IMAGE}`);
+    execa.commandSync(`docker pull ${image}`);
 
     const cmdStr = oneLine`
 			docker run 
