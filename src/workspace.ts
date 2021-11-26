@@ -92,7 +92,7 @@ export class Workspace {
 			--privileged 
 			-p${port}:50051 
 			-v/var/run/docker.sock:/var/run/docker.sock 
-			-v${ctx}:/workspace/ ${BOXYGEN_IMAGE}
+			-v${ctx}:/workspace/ ${image}
 		`;
 
     const cmd = execa.command(cmdStr);
