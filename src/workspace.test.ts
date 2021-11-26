@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import execa from 'execa';
-import { BOXYGEN_IMAGE, Workspace } from './workspace';
+import { BOXYGEN_IMAGE, DEFAULT_VERSION, Workspace } from './workspace';
 import tcpPortUsed from 'tcp-port-used';
 
 
@@ -58,7 +58,7 @@ describe('workspace', () => {
 
 		it('should pull the boxygen server docker image', () => {
 			expect(commandSyncSpy).toBeCalledTimes(1);
-			expect(commandSyncSpy).toBeCalledWith(`docker pull ${BOXYGEN_IMAGE}`);
+			expect(commandSyncSpy).toBeCalledWith(`docker pull ${BOXYGEN_IMAGE}:${DEFAULT_VERSION}`);
 		});
 
 		it('should start the boxygen server', () => {
