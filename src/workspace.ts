@@ -64,7 +64,7 @@ export class Workspace {
 
   // Create a new image from this workspace
   public image(from: string, opts: FromOpts = {}): Image {
-    return Image["from"](this, from);
+    return Image["from"](this, from, opts);
   }
 
   public static async start(
